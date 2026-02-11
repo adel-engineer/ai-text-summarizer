@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Summarizer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+  <div class="bg-white p-6 rounded-xl shadow w-full max-w-2xl">
+    <h1 class="text-2xl font-bold mb-4">AI Text Summarizer</h1>
+
+    <textarea
+      id="inputText"
+      class="w-full border p-3 rounded mb-4"
+      rows="6"
+      placeholder="Paste your text here..."
+    ></textarea>
+
+    <button
+      onclick="summarize()"
+      class="bg-blue-600 text-white px-4 py-2 rounded"
+    >
+      Summarize
+    </button>
+
+    <div id="result" class="mt-4 text-gray-800"></div>
+  </div>
+
+  <script>
+    async function summarize() {
+      const text = document.getElementById("inputText").value;
+      const resultDiv = document.getElementById("result");
+
+      resultDiv.innerText = "Summarizing...";
+
+      const res = await fetch("/summarize", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text }),
+      });
+
+      const data = await res.json();
+      resultDiv.innerText = data.summary;
+    }
+  </script>
+</body>
+</html>
