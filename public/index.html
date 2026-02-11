@@ -8,7 +8,11 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
 
   <div class="bg-white p-6 rounded-xl shadow w-full max-w-2xl">
-    <h1 class="text-2xl font-bold mb-4">AI Text Summarizer</h1>
+    <h1 class="text-2xl font-bold mb-2">AI Text Summarizer</h1>
+     <p class="text-gray-600 mb-4">
+       Paste any long text and get a clear, short summary powered by AI.
+     </p>
+
 
     <textarea
       id="inputText"
@@ -28,23 +32,44 @@
   </div>
 
   <script>
-    async function summarize() {
-      const text = document.getElementById("inputText").value;
-      const resultDiv = document.getElementById("result");
+async function summarize() {
+  const text = document.getElementById("inputText").value;
+  const resultDiv = document.getElementById("result");
+  const button = document.querySelector("button");
 
-      resultDiv.innerText = "Summarizing...";
+  if (!text.trim()) {
+    resultDiv.innerText = "Please enter some text first.";
+    return;
+  }
 
-      const res = await fetch("/summarize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text }),
-      });
+  button.disabled = true;
+  button.innerText = "Summarizing...";
+  resultDiv.innerText = "";
 
-      const data = await res.json();
+  try {
+    const res = await fetch("/summarize", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text }),
+    });
+
+    const data = await res.json();
+
+    if (data.summary) {
       resultDiv.innerText = data.summary;
+    } else {
+      resultDiv.innerText = "Error: " + (data.error || "Something went wrong");
     }
+  } catch (err) {
+    resultDiv.innerText = "Network error. Please try again.";
+  }
+
+  button.disabled = false;
+  button.innerText = "Summarize";
+}
+
   </script>
 </body>
 </html>
